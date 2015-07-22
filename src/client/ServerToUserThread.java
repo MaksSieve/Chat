@@ -1,7 +1,6 @@
 package client;
 
 import java.io.*;
-import java.util.*;
 
 public class ServerToUserThread implements Runnable {
 	

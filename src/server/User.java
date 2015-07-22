@@ -6,18 +6,17 @@ import java.util.*;
 
 public class User implements Runnable {
 	
+	@SuppressWarnings("unused")
 	private BufferedReader userIn = null, serverIn = null;
 	private OutputStream userOut = null;
 	private PrintStream serverOut = null;
 	private ArrayList <User> userList = null;
-	private String msg = "";
-	private int name = 0;
 	private Socket userSocket = null;
-	private Thread trd = null;
+	public Thread trd = null;
+	public String name = null;
 		
-	User(Socket uSocket, PrintStream sOut, int n, ArrayList <User> uList) throws IOException
+	User(Socket uSocket, PrintStream sOut,ArrayList <User> uList) throws IOException
 	{
-		this.name = n;
 		this.userList = uList;
 		this.serverOut = sOut;
 		this.userSocket = uSocket;
@@ -25,18 +24,14 @@ public class User implements Runnable {
 			new InputStreamReader(userSocket.getInputStream())
 		);
 		this.userOut = userSocket.getOutputStream();
-		
-		sayToUser("Welcome!\n");
-		
-		//TODO Move to ServerMain
-		trd = new Thread(this, "user "+name+" thread");
+		trd = new Thread(this, "user thread");
 		trd.start();
 	}
 	
 	synchronized private void sayToServer(String m)
 	{
 		serverOut.println(m);
-		sayToUser("Meesage resieved!");
+		//sayToUser("Meesage resieved!");
 	}
 	
 	synchronized public void sayToUser(String m)
@@ -44,34 +39,39 @@ public class User implements Runnable {
 		try {
 			userOut.write((m + "\n").getBytes());
 		} catch (IOException e) {
-			
+			sayToServer("I/O ERROR! Couldn't send message to user!");
 		}
 	}
 	
 	private void listen() throws IOException
 	{
-		while (true) {
-			msg = userIn.readLine();
-			if (msg == "exit") break;
+		String msg = "";
+		while ((msg = userIn.readLine()) != null) {
+			if (msg.equalsIgnoreCase("exit")) break;
 			sayToServer(name + " ::: " + msg);
-			Iterator itr = userList.iterator();
+			Iterator <User> itr = userList.iterator();
 			while (itr.hasNext())
 			{
-				User u = (User) itr.next();
+				User u = itr.next();
 				if(this != u){
-					u.sayToUser( name + " :::" + msg);
+					u.sayToUser(name + " :::" + msg);
 				}
 			}
 		}
 	}
-	
+	 
 	@Override
 	public void run()
 	{
 		try {
+			sayToUser("Enter your nick:");
+			name = userIn.readLine();
+			userList.add(this);
+			sayToUser(name + ", welcome in JavaChat");
+			sayToServer("User <<" + name + ">> conected!");
 			listen();
 		} catch (IOException e) {
-			
+			sayToServer("I/O ERROR! User's connection error!");
 		}
 	}
 }
