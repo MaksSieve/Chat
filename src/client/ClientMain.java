@@ -12,11 +12,7 @@ public class ClientMain {
 	public static int defaultPort = 8000;
 	public static String defaultServer = "localhost";
 	
-<<<<<<< HEAD
 	@SuppressWarnings({ "unused", "resource" })
-=======
-	@SuppressWarnings("unused")
->>>>>>> origin/master
 	public static void main(String[] args) {
 		
 		Socket serverSocket = null;

@@ -12,7 +12,7 @@ public class ServerMain {
 	public static String welcomeMsg = "Welcome to Java ChatServer!";
 	public static int defaultPort = 8000;
 	
-	@SuppressWarnings({ "resource", "unused" })
+	@SuppressWarnings("resource")
 	public static void main(String[] args)throws IOException {
 		
 		ArrayList <User> userList = null;
@@ -29,10 +29,8 @@ public class ServerMain {
 		System.out.println(line);
 		System.out.println(nameMsg);
 		System.out.println(line);
-	
-		/*
-		 * Starting server
-		 */
+		System.out.println('\n');
+		
 		sc = new Scanner(System.in);
 		
 		while(true){
@@ -43,37 +41,22 @@ public class ServerMain {
 				Listener = new ServerSocket(port);
 				break;
 			}catch(IOException e){
-				System.out.println("I/O ERROR! Couldn't listen to port " + port + "! Try again.");
+				System.out.println("Couldn't listen to port " + port + "! Try again.");
 			}
 		}
 		
 		
 		sc.close();
 		
-		System.out.println(line);
+		System.out.println("");
 		System.out.println("Server started at: " + Listener.getInetAddress());
 		System.out.println("Local port: " + Listener.getLocalPort());
-		System.out.println(line);
 		
-		
-		/*
-		 * Main block
-		 */
-		System.out.println("Waiting for users...");
 		userList = new ArrayList<User>();
 		while(true){
-			try{
-				User nU = new User(Listener.accept(), System.out, userList);
-			}catch(IOException e){
-				System.out.println("I/O ERROR! User didn't connect!");
-			}
-			Iterator <User> itr = userList.iterator();
-			while(itr.hasNext()){
-				User u = itr.next();
-				if(!(u.trd.isAlive())){
-					userList.remove(u);
-				}
-			}
+			User nU = new User(Listener.accept(), System.out, ++n, userList);
+			userList.add(nU);
+			System.out.println("New user connected!");
 		}
 		//Listener.close();
 	}
