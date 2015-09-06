@@ -15,13 +15,12 @@ public class UserToServerThread implements Runnable {
 	UserToServerThread(OutputStream server, InputStream user){
 		this.user = new Scanner(user);
 		this.server = server;
-		trd = new Thread(this, "UTS");
+		trd = new Thread(this, "UserToServer");
 		trd.start();
 	}
 	
 	synchronized private int listen() throws IOException{
-		
-		message = user.next();
+		message = user.nextLine();
 		while (message != "exit"){
 			server.write((message+"\n").getBytes());
 			message = user.nextLine();

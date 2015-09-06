@@ -12,7 +12,11 @@ public class ClientMain {
 	public static int defaultPort = 8000;
 	public static String defaultServer = "localhost";
 	
+<<<<<<< HEAD
 	@SuppressWarnings({ "unused", "resource" })
+=======
+	@SuppressWarnings("unused")
+>>>>>>> origin/master
 	public static void main(String[] args) {
 		
 		Socket serverSocket = null;
@@ -41,8 +45,8 @@ public class ClientMain {
 		while (true){
 			try{
 				System.out.println("Input server's ip");
-//				serverAddr = InetAddress.getByName(sc.nextLine());
-				serverAddr = InetAddress.getByName(defaultServer);
+				serverAddr = InetAddress.getByName(sc.nextLine());
+				//serverAddr = InetAddress.getByName(defaultServer);
 				break;
 			}catch(UnknownHostException e){
 				System.out.println("ERROR! Unknown server's ip.");
@@ -52,8 +56,8 @@ public class ClientMain {
 		while (true){
 			try{
 				System.out.println("Input server's port");
-				//serverPort = sc.nextInt();
-				serverPort = defaultPort;
+				serverPort = sc.nextInt();
+				//serverPort = defaultPort;
 				serverSocket = new Socket(serverAddr, serverPort);
 				break;
 			}catch(IOException e){
@@ -79,8 +83,9 @@ public class ClientMain {
 		System.out.println("Connected.");
 		System.out.println(line);
 		System.out.print("");
-		sc = new Scanner(System.in);
+		//sc = new Scanner(System.in);
 		/*
+		 * Non-threads communication
 		try{
 			while(true) {
 				userMsg = sc.nextLine() + "\n";
@@ -108,6 +113,7 @@ public class ClientMain {
 		}catch(InterruptedException e){
 			
 		}
+		sc.close();
 		userOut.println("Connection closed");
 	}
 
