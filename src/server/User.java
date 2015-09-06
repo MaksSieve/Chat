@@ -6,19 +6,22 @@ import java.util.*;
 
 public class User implements Runnable {
 	
+	@SuppressWarnings("unused")
 	private BufferedReader userIn = null, serverIn = null;
 	private OutputStream userOut = null;
 	private PrintStream serverOut = null;
 	private ArrayList <User> userList = null;
 	private String msg = "";
-	private int name = 0;
+	private int num = 0;
+	public String nick = "";
 	private Socket userSocket = null;
 	private Thread trd = null;
 		
 	User(Socket uSocket, PrintStream sOut, int n, ArrayList <User> uList) throws IOException
 	{
-		this.name = n;
+		
 		this.userList = uList;
+		this.num = userList.indexOf(this);
 		this.serverOut = sOut;
 		this.userSocket = uSocket;
 		this.userIn = new BufferedReader(
@@ -26,17 +29,18 @@ public class User implements Runnable {
 		);
 		this.userOut = userSocket.getOutputStream();
 		
-		sayToUser("Welcome!\n");
-		
+		sayToUser("Welcome!");
+		sayToUser("Enter your nickname:");
+		this.nick = userIn.readLine();
 		//TODO Move to ServerMain
-		trd = new Thread(this, "user "+name+" thread");
+		trd = new Thread(this, "user "+num+" thread");
 		trd.start();
 	}
 	
 	synchronized private void sayToServer(String m)
 	{
 		serverOut.println(m);
-		sayToUser("Meesage resieved!");
+		//sayToUser("Meesage resieved!");
 	}
 	
 	synchronized public void sayToUser(String m)
@@ -48,18 +52,18 @@ public class User implements Runnable {
 		}
 	}
 	
-	private void listen() throws IOException
+	private int listen() throws IOException
 	{
 		while (true) {
 			msg = userIn.readLine();
-			if (msg == "exit") break;
-			sayToServer(name + " ::: " + msg);
-			Iterator itr = userList.iterator();
+			if (msg == "exit") return 0;
+			sayToServer(nick + " ::: " + msg);
+			Iterator<User> itr = userList.iterator();
 			while (itr.hasNext())
 			{
 				User u = (User) itr.next();
 				if(this != u){
-					u.sayToUser( name + " :::" + msg);
+					u.sayToUser(nick + " ::: " + msg);
 				}
 			}
 		}
@@ -69,9 +73,13 @@ public class User implements Runnable {
 	public void run()
 	{
 		try {
-			listen();
-		} catch (IOException e) {
+			if (listen()==0){
+				sayToServer("User #" + num + " disconnected.");
+				userList.remove(this);
+			};
 			
+		} catch (IOException e) {
+			sayToServer("ERROR! I/O Exception. ");
 		}
 	}
 }
